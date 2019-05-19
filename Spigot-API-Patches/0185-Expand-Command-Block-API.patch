@@ -1,0 +1,66 @@
+From 81a363fe578e5592ff3cf2b79d9ca6e3459bbd14 Mon Sep 17 00:00:00 2001
+From: willies952002 <admin@domnian.com>
+Date: Sat, 18 May 2019 20:45:10 -0400
+Subject: [PATCH] Expand Command Block API
+
+Add Methods for Getting and Settings:
+- Command Block Type (Instant, Chain, or Repeating)
+- Always Powered State (Doesn't require an external redstone input to function)
+
+diff --git a/src/main/java/org/bukkit/block/CommandBlock.java b/src/main/java/org/bukkit/block/CommandBlock.java
+index 372c0bd5..8757d74c 100644
+--- a/src/main/java/org/bukkit/block/CommandBlock.java
++++ b/src/main/java/org/bukkit/block/CommandBlock.java
+@@ -45,4 +45,49 @@ public interface CommandBlock extends TileState {
+      * @param name New name for this CommandBlock.
+      */
+     public void setName(@Nullable String name);
++
++    // Paper start - Expand Command Block API
++    /**
++     * Gets the value of the 'type' property.
++     *
++     * @return the 'type' value
++     */
++    public CommandBlock.Type getMode();
++
++    /**
++     * Sets the value of the 'type' property.
++     *
++     * @param type the new 'type' value
++     */
++    public void setMode(CommandBlock.Type type);
++
++    /**
++     * Gets the value of the 'always powered' property.
++     *
++     * @return the 'always powered' value
++     */
++    public boolean isAlwaysPowered();
++
++    /**
++     * Sets the value of the 'always powered' property.
++     *
++     * @param powered the new 'always powered' value
++     */
++    public void setAlwaysPowered(boolean powered);
++
++    public enum Type {
++        /**
++         * Normal Command Block
++         */
++        INSTANT,
++        /**
++         * Chain Command Block
++         */
++        CHAIN,
++        /**
++         * Repeating Command Block
++         */
++        REPEATING
++    }
++    // Paper end
+ }
+-- 
+2.20.1.windows.1
+

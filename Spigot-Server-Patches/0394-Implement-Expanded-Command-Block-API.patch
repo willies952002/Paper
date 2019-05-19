@@ -1,0 +1,73 @@
+From 017aadbd9a9a733ce664ace8194463b75c9f6008 Mon Sep 17 00:00:00 2001
+From: willies952002 <admin@domnian.com>
+Date: Sat, 18 May 2019 20:46:33 -0400
+Subject: [PATCH] Implement Expanded Command Block API
+
+Add Methods for Getting and Settings:
+- Command Block Type (Instant, Chain, or Repeating)
+- Always Powered State (Doesn't require an external redstone input to function)
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftCommandBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftCommandBlock.java
+index 5c9bfe951..d96f53bef 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/CraftCommandBlock.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/CraftCommandBlock.java
+@@ -1,5 +1,6 @@
+ package org.bukkit.craftbukkit.block;
+ 
++import net.minecraft.server.IChatBaseComponent;
+ import net.minecraft.server.TileEntityCommand;
+ import org.bukkit.Material;
+ import org.bukkit.block.Block;
+@@ -54,4 +55,49 @@ public class CraftCommandBlock extends CraftBlockEntityState<TileEntityCommand>
+         commandBlock.getCommandBlock().setCommand(command);
+         commandBlock.getCommandBlock().setName(CraftChatMessage.fromStringOrNull(name));
+     }
++
++    // Paper start - Expand Command Block API
++    public CommandBlock.Type getMode() {
++        switch (getTileEntity().u()) {
++            case SEQUENCE:
++                return Type.CHAIN;
++            case AUTO:
++                return Type.REPEATING;
++        }
++        return Type.INSTANT;
++    }
++
++    public void setMode(CommandBlock.Type type) {
++        TileEntityCommand te = getTileEntity();
++
++        net.minecraft.server.NBTTagCompound tag = te.save(new net.minecraft.server.NBTTagCompound());
++
++        switch (type) {
++            case INSTANT:
++                setType(Material.COMMAND_BLOCK);
++                break;
++            case CHAIN:
++                setType(Material.CHAIN_COMMAND_BLOCK);
++                break;
++            case REPEATING:
++                setType(Material.REPEATING_COMMAND_BLOCK);
++                break;
++        }
++
++        getTileEntityFromWorld().load(tag);
++    }
++
++    public boolean isAlwaysPowered() {
++        return getTileEntity().d();
++    }
++
++    /**
++     * Sets the value of the 'always powered' property.
++     *
++     * @param powered the new 'always powered' value
++     */
++    public void setAlwaysPowered(boolean powered) {
++        getTileEntity().a(powered);
++    }
++    // Paper end
+ }
+-- 
+2.20.1.windows.1
+
